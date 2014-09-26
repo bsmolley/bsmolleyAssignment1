@@ -1,6 +1,8 @@
-package com.example.todo;
+package ca.ualberta.cs.bsmolleyToDo;
 
 import java.util.ArrayList;
+
+import com.example.todo.R;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -26,7 +28,6 @@ public class ArchiveActivity extends Fragment{
     static int archChecked = 0;
     static int archUnchecked = 0; 
 	
-	// Constructor
 	public ArchiveActivity(){		
 	}
 		
@@ -49,24 +50,23 @@ public class ArchiveActivity extends Fragment{
         // Set up and adapter for use with our list 
     	adapter = new ArrayAdapter<String>(getActivity(), 
     			android.R.layout.simple_list_item_multiple_choice, theArchList);
-
     	archList.setAdapter(adapter);
     	adapter.notifyDataSetChanged();
     	
+    	// Set up the ListView to respond to long clicks, items can be marked as complete or incomplete
     	archList.setOnItemLongClickListener(new OnItemLongClickListener(){
-
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				
-				String toDo = (String) archList.getAdapter().getItem(position);
-				if (toDo.contains("[X] ")){
-					String newToDo = toDo.replace("[X] ", "[  ] ");
+				String arch = (String) archList.getAdapter().getItem(position);
+				if (arch.contains("[X] ")){
+					String newToDo = arch.replace("[X] ", "[  ] ");
 					theArchList.remove(position);
 					theArchList.add(position, newToDo);
 				}
 				else{
-					String newToDo = toDo.replace("[  ] ", "[X] ");
+					String newToDo = arch.replace("[  ] ", "[X] ");
 					theArchList.remove(position);
 					theArchList.add(position, newToDo);
 				}
@@ -77,7 +77,8 @@ public class ArchiveActivity extends Fragment{
 			}
     		
     	});
-    	               	
+    	   
+    	// Button used to send selected items to back to the To Do page
     	archUn.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -93,6 +94,7 @@ public class ArchiveActivity extends Fragment{
     		
     	});
     	
+    	// Button used to delete selected items
     	archDel.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -108,8 +110,9 @@ public class ArchiveActivity extends Fragment{
         return archiveView;
     }
     
-    public void delArch(SparseBooleanArray array, ArrayAdapter<String> adapter, int size){
-		for(int i = size - 1; i >= 0; i--){
+    // Method called when the Delete Selected button is pressed
+    private void delArch(SparseBooleanArray array, ArrayAdapter<String> adapter, int size){
+		for(int i = size -1; i >= 0; i--){
             if(array.get(i)){
                 adapter.remove(theArchList.get(i));
                 //archItems -= 1;
@@ -118,8 +121,9 @@ public class ArchiveActivity extends Fragment{
 		array.clear();
     }
     
+    // Method used to retrieve items from the To Do list that will be moved to the archive
     public static void grabToDoItems(SparseBooleanArray array, ArrayList<String> toDoList, int size){  	
-		for(int i = size - 1; i >= 0; i--){
+		for(int i = size -1; i >= 0; i--){
            if(array.get(i)){
 				theArchList.add(toDoList.get(i));
 				adapter.notifyDataSetChanged();
@@ -127,16 +131,18 @@ public class ArchiveActivity extends Fragment{
         }
     }
 
+    // Method that returns the size of the Archive list
 	public static int grabArchiveHistory() {
 		archItems = archList.getCount();
 		return archItems;
 	}
 
+	// Method that returns the number of completed archive items
 	public static int grabArchChecked() {
 		int size = theArchList.size();
 		archChecked = 0;
 		
-		for (int i = size - 1; i >= 0; i--){
+		for (int i = size -1; i >= 0; i--){
 			if (theArchList.get(i).contains("[X] ")){
 				archChecked += 1;
 			}
@@ -144,12 +150,14 @@ public class ArchiveActivity extends Fragment{
 		return archChecked;
 	}
 
+	// Method that returns the number of incomplete archive items
 	public static int grabArchUnchecked() {
 		archItems = archList.getCount();
 		archUnchecked = archItems - archChecked;
 		return archUnchecked;
 	}
 
+	// Returns the Archive list
 	public static ArrayList<String> grabArchList() {
 		return theArchList;
 	}
